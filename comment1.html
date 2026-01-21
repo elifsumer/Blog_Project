@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Food Comment</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1 class="title">Comments</h1>
+    <div class="comments">
+  <div class="comment">
+    <p class="name">Elif****</p>
+    <p>I love this trip!</p>
+    <div class="comment-box">
+  <input type="text" placeholder="Enter your comment">
+</div>
+  </div>
+
+  <div class="comment">
+    <p class="name">Göksu****</p>
+    <p>I love this trip!</p>
+    <div class="comment-box">
+  <input type="text" placeholder="Enter your comment">
+</div>
+  </div>
+
+  <div class="comment">
+    <p class="name">Defne****</p>
+    <p>I love this trip!</p>
+    <div class="comment-box">
+  <input type="text" placeholder="Enter your comment">
+</div>
+  </div>
+</div><br>
+<div id="your-comment">
+  <input type="text" id="commentInput" placeholder="Enter your comment">
+</div><br>
+<button id="enterBtn">Enter</button>
+<script>
+document.getElementById("enterBtn").addEventListener("click", function () {
+  const input = document.getElementById("commentInput");
+  const text = input.value.trim();
+
+  if (text === "") return;
+
+  const commentDiv = document.createElement("div");
+  commentDiv.className = "comment";
+
+  commentDiv.innerHTML = `
+    <p class="name">You****</p>
+    <p>${text}</p>
+  `;
+
+  document.querySelector(".comments").appendChild(commentDiv);
+
+  input.value = "";
+});
+</script>
+
+
+</html>

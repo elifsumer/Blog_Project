@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Food Blog</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1 class="title">The Food Ninja Blog</h1>
+  <p class="subtitle">A blog about food, experiences, and recipes.</p>
+  <div class="search-box">
+  <input type="text" id="search" placeholder="Search for articles">
+</div>
+
+
+  <div class="cards">
+    <div class="card">
+      <img src="https://www.zicasso.com/static/f0a152d1bc93dc1a7b2fd97679e949b2/0a55d/f0a152d1bc93dc1a7b2fd97679e949b2.webp">
+      <span class="tag">Travel</span>
+      <h3><a href="comment1.html">What Traveling Greece For 2 Weeks Taught Me About Life</a></h3>
+      <p class="meta">Jun 21, 2021 · 11 min read</p>
+      <p class="meta">It was a truly wonderful experience. During my trip, I visited all sorts of historical and vibrant places. Everywhere I went, I tasted different traditional dishes, all of which were delicious. The seas and beaches were very clean and clear. I especially enjoyed swimming. I would recommend everyone to go and see it.</p>
+      <p><b>George Costanza</b></p>
+    </div>
+
+    <div class="card">
+      <img src="https://www.tariqhalalmeats.com/pub/media/magefan_blog/Chicken_Nuggets2.jpg">
+      <span class="tag">Food Theory</span>
+      <h3><a href="comment.html">Why You Should Never Order 12 Chicken Nuggets</a></h3>
+      <p class="meta">Aug 1, 2021 · 7 min read</p>
+      <p class="meta">Ordering 12 chicken nuggets is rarely a smart choice because it’s deliberately designed as a psychological “middle trap”: 6 feels too small, 20 looks like a much better deal for just a little more money, and 12 sits in between with the worst value per nugget, neither truly filling nor economical, creating the illusion of moderation while quietly nudging you into overpaying—this isn’t a food decision, it’s pricing psychology at work.</p>
+      <p><b>George Costanza</b></p>
+    </div>
+  </div><br><br>
+  <div class="grid">
+  <div class="signup">
+    <h3 style="color: white;"><b>Subscribe To Our Newsletter</b></h3>
+    <p style="color: white;">Get weekly food news, articles and videos delivered to your inbox.</p>
+    <div><input type="text" placeholder="Email"></div><br>
+    <button>Sign Up</button>
+  </div>
+  <div class="paragraph"><h3><b>POPULAR POSTS</b></h3>
+  <p>How To Have Your Cake and Eat It Too: The Way of The Chicken Man</p><br>
+  <p>My Grandma's 30-years-old Recipe</p><br>
+  <p>What I leanrned about cooking from Ratatoulie</p></div>
+  </div><br>
+  <div style="background-color: rgb(238, 238, 238);">
+  <div class="texts"><p>About</p><p>Privacy Policy</p><p>Contact</p></div>
+  <p style="padding-bottom: 30px; text-align: center;"><b>Cophyright © 2021 Food Ninja Blog. All Rights Reserved.</b></p>
+  </div>
+<script>
+  const input = document.getElementById("search");
+  const cards = document.querySelectorAll(".card");
+
+  let timer;
+
+  input.addEventListener("keyup", (e) => {
+    clearTimeout(timer);
+
+    timer = setTimeout(() => {
+      const query = e.target.value.toLowerCase().trim();
+
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+
+        if (text.includes(query)) {
+          card.style.display = "block";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    }, 300);
+  });
+</script>
+
+</body>
+</html>
