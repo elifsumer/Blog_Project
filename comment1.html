@@ -1,60 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Food Comment</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">Food Ninja</a>
+      <div class="nav-links">
+        <a href="index.html">Blog</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
     <h1 class="title">Comments</h1>
     <div class="comments">
-  <div class="comment">
-    <p class="name">Elif****</p>
-    <p>I love this trip!</p>
-    <div class="comment-box">
-  <input type="text" placeholder="Enter your comment">
-</div>
+      
+      <div class="comment">
+        <p class="name">Elif****</p>
+        <p>I love this trip!</p>
+        <div class="comment-box">
+          <input type="text" class="reply-input" placeholder="Enter your comment">
+          <button class="reply-btn">Reply</button>
+        </div>
+      </div>
+
+      <div class="comment">
+        <p class="name">Göksu****</p>
+        <p>I love this trip!</p>
+        <div class="comment-box">
+          <input type="text" class="reply-input" placeholder="Enter your comment">
+          <button class="reply-btn">Reply</button>
+        </div>
+      </div>
+
+      <div class="comment">
+        <p class="name">Defne****</p>
+        <p>I love this trip!</p>
+        <div class="comment-box">
+          <input type="text" class="reply-input" placeholder="Enter your comment">
+          <button class="reply-btn">Reply</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="your-comment">
+      <input type="text" id="mainInput" placeholder="Write a new comment...">
+    </div>
+    <button id="enterBtn">Enter</button>
+  </main>
+
+  <div class="footer-container">
+    <div class="texts"><p>About</p><p>Privacy Policy</p><p>Contact</p></div>
+    <p style="padding-bottom: 30px; text-align: center;"><b>Copyright © 2021 Food Ninja Blog. All Rights Reserved.</b></p>
   </div>
 
-  <div class="comment">
-    <p class="name">Göksu****</p>
-    <p>I love this trip!</p>
-    <div class="comment-box">
-  <input type="text" placeholder="Enter your comment">
-</div>
-  </div>
-
-  <div class="comment">
-    <p class="name">Defne****</p>
-    <p>I love this trip!</p>
-    <div class="comment-box">
-  <input type="text" placeholder="Enter your comment">
-</div>
-  </div>
-</div><br>
-<div id="your-comment">
-  <input type="text" id="commentInput" placeholder="Enter your comment">
-</div><br>
-<button id="enterBtn">Enter</button>
 <script>
-document.getElementById("enterBtn").addEventListener("click", function () {
-  const input = document.getElementById("commentInput");
-  const text = input.value.trim();
+    document.addEventListener("DOMContentLoaded", function() {
+        loadComments();
+    });
 
-  if (text === "") return;
+    function createCommentElement(text, isReply) {
+        const commentDiv = document.createElement("div");
+        
+        commentDiv.className = "comment dynamic-comment"; 
+        
+        if(isReply) {
+            commentDiv.style.marginLeft = "40px"; 
+            commentDiv.style.borderLeft = "4px solid #1e3a8a"; 
+            commentDiv.style.backgroundColor = "#f9f9f9";
+            commentDiv.style.height = "auto"; 
+            commentDiv.style.padding = "15px"; 
+        }
 
-  const commentDiv = document.createElement("div");
-  commentDiv.className = "comment";
+        commentDiv.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <p class="name">You**** ${isReply ? '(Reply)' : ''}</p>
+                <button class="delete-btn" style="background:red; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Delete</button>
+            </div>
+            <p>${text}</p>
+        `;
 
-  commentDiv.innerHTML = `
-    <p class="name">You****</p>
-    <p>${text}</p>
-  `;
+        const deleteButton = commentDiv.querySelector(".delete-btn");
+        deleteButton.addEventListener("click", function () {
+            commentDiv.remove(); 
+            saveCommentsToStorage(); 
+        });
 
-  document.querySelector(".comments").appendChild(commentDiv);
+        return commentDiv;
+    }
 
-  input.value = "";
-});
+    document.getElementById("enterBtn").addEventListener("click", function() {
+        const input = document.getElementById("mainInput"); 
+        if (!input) return; 
+
+        const text = input.value.trim();
+
+        if (text === "") return;
+
+        const newComment = createCommentElement(text, false); 
+        
+        document.querySelector(".comments").appendChild(newComment);
+        
+        saveCommentsToStorage();
+
+        input.value = "";
+    });
+
+    const replyButtons = document.querySelectorAll(".reply-btn");
+
+    replyButtons.forEach(btn => {
+        btn.addEventListener("click", function() {
+            const input = this.previousElementSibling;
+            const text = input.value.trim();
+
+            if (text === "") return;
+
+            const newReply = createCommentElement(text, true);
+
+            const parentComment = this.closest(".comment");
+            parentComment.appendChild(newReply);
+
+
+            input.value = "";
+        });
+    });
+
+
+    function saveCommentsToStorage() {
+        const comments = [];
+        
+        const dynamicElements = document.querySelectorAll(".comments > .dynamic-comment");
+
+        dynamicElements.forEach(el => {
+            const text = el.querySelector("p:last-child").innerText;
+            comments.push(text);
+        });
+
+        localStorage.setItem("foodBlogComments", JSON.stringify(comments));
+    }
+
+    function loadComments() {
+        const storedComments = JSON.parse(localStorage.getItem("foodBlogComments")) || [];
+
+        storedComments.forEach(text => {
+            const commentElement = createCommentElement(text, false);
+            document.querySelector(".comments").appendChild(commentElement);
+        });
+    }
+
 </script>
-
-
+</body>
 </html>
