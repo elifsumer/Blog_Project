@@ -67,14 +67,16 @@
     function createCommentElement(text, isReply) {
         const commentDiv = document.createElement("div");
         
-        commentDiv.className = "comment dynamic-comment"; 
+
+        commentDiv.className = isReply ? "comment dynamic-comment nested-reply" : "comment dynamic-comment"; 
         
         if(isReply) {
             commentDiv.style.marginLeft = "40px"; 
             commentDiv.style.borderLeft = "4px solid #1e3a8a"; 
             commentDiv.style.backgroundColor = "#f9f9f9";
             commentDiv.style.height = "auto"; 
-            commentDiv.style.padding = "15px"; 
+            commentDiv.style.padding = "15px";
+            commentDiv.style.marginTop = "10px";
         }
 
         commentDiv.innerHTML = `
@@ -82,49 +84,67 @@
                 <p class="name">You**** ${isReply ? '(Reply)' : ''}</p>
                 <button class="delete-btn" style="background:red; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Delete</button>
             </div>
-            <p>${text}</p>
+            <p class="comment-text">${text}</p>
+            
+            <div class="comment-box">
+                <input type="text" class="reply-input" placeholder="Yanıt yaz...">
+                <button class="reply-btn">Reply</button>
+            </div>
+            <div class="replies-container"></div>
         `;
 
         const deleteButton = commentDiv.querySelector(".delete-btn");
-        deleteButton.addEventListener("click", function () {
-            commentDiv.remove(); 
+        deleteButton.addEventListener("click", function (e) {
+            e.stopPropagation(); 
+            commentDiv.remove();
             saveCommentsToStorage(); 
+        });
+
+        const replyButton = commentDiv.querySelector(".reply-btn");
+        const replyInput = commentDiv.querySelector(".reply-input");
+        const repliesContainer = commentDiv.querySelector(".replies-container");
+
+        replyButton.addEventListener("click", function(e) {
+            e.stopPropagation();
+            const replyText = replyInput.value.trim();
+            if (replyText === "") return;
+
+            const newReply = createCommentElement(replyText, true);
+            
+            repliesContainer.appendChild(newReply);
+
+            saveCommentsToStorage(); 
+            replyInput.value = "";
         });
 
         return commentDiv;
     }
 
     document.getElementById("enterBtn").addEventListener("click", function() {
-        const input = document.getElementById("mainInput"); 
-        if (!input) return; 
-
+        const input = document.getElementById("mainInput");
         const text = input.value.trim();
 
         if (text === "") return;
 
         const newComment = createCommentElement(text, false); 
-        
         document.querySelector(".comments").appendChild(newComment);
         
         saveCommentsToStorage();
-
         input.value = "";
     });
 
-    const replyButtons = document.querySelectorAll(".reply-btn");
+    const staticReplyButtons = document.querySelectorAll(".comments > .comment:not(.dynamic-comment) .reply-btn");
 
-    replyButtons.forEach(btn => {
+    staticReplyButtons.forEach(btn => {
         btn.addEventListener("click", function() {
             const input = this.previousElementSibling;
             const text = input.value.trim();
-
             if (text === "") return;
 
             const newReply = createCommentElement(text, true);
-
+            
             const parentComment = this.closest(".comment");
             parentComment.appendChild(newReply);
-
 
             input.value = "";
         });
@@ -132,27 +152,52 @@
 
 
     function saveCommentsToStorage() {
-        const comments = [];
+        const commentsData = [];
         
-        const dynamicElements = document.querySelectorAll(".comments > .dynamic-comment");
+        const topLevelComments = document.querySelectorAll(".comments > .dynamic-comment");
 
-        dynamicElements.forEach(el => {
-            const text = el.querySelector("p:last-child").innerText;
-            comments.push(text);
+        topLevelComments.forEach(commentEl => {
+            const text = commentEl.querySelector(".comment-text").innerText;
+            
+            const repliesData = [];
+            const repliesContainer = commentEl.querySelector(".replies-container");
+            
+            if (repliesContainer) {
+                const nestedReplies = repliesContainer.querySelectorAll(".nested-reply");
+                nestedReplies.forEach(replyEl => {
+                     const replyText = replyEl.querySelector(".comment-text").innerText;
+                     repliesData.push(replyText);
+                });
+            }
+
+            commentsData.push({
+                text: text,
+                replies: repliesData
+            });
         });
 
-        localStorage.setItem("foodBlogComments", JSON.stringify(comments));
+        localStorage.setItem("foodBlogComplexData", JSON.stringify(commentsData));
     }
 
     function loadComments() {
-        const storedComments = JSON.parse(localStorage.getItem("foodBlogComments")) || [];
+        const storedData = JSON.parse(localStorage.getItem("foodBlogComplexData")) || [];
 
-        storedComments.forEach(text => {
-            const commentElement = createCommentElement(text, false);
-            document.querySelector(".comments").appendChild(commentElement);
+        storedData.forEach(data => {
+            const mainCommentEl = createCommentElement(data.text, false);
+            
+            if (data.replies && data.replies.length > 0) {
+                const container = mainCommentEl.querySelector(".replies-container");
+                data.replies.forEach(replyText => {
+                    const replyEl = createCommentElement(replyText, true);
+                    container.appendChild(replyEl);
+                });
+            }
+
+            document.querySelector(".comments").appendChild(mainCommentEl);
         });
     }
 
 </script>
 </body>
 </html>
+
